@@ -6,17 +6,29 @@ from .models import User
 from rest_framework.renderers import JSONRenderer
 from .serializers import UserSerializers
 from django.http import HttpResponse
-
+from django.core import serializers
 # Create your views here.
 
 
 @csrf_exempt
+def download_data(request, email):
+    queryset = User.objects.filter(email=email)
+    data = serializers.serialize('xml', queryset)
+    response = HttpResponse(data, content_type='application/xml')
+    response['Content-Disposition'] = 'attachment; filename="data.xml"'
+    return response
+
 def user_api(request):
     if request.method == 'GET':
         stu = User.objects.all()
         serializer = UserSerializers(stu, many=True)
         json_data = JSONRenderer().render(serializer.data)
         return HttpResponse(json_data, content_type='applicaiton/json')
+    
+    if request.method == 'Download' :
+        stu = User.objects.filter()
+        data = serializers.serialize('xml', stu)
+        return HttpResponse(data, content_type='application/xml')
 
     if request.method == 'POST':
         json_data = request.body
@@ -29,5 +41,5 @@ def user_api(request):
             res = {'msg': 'Data is Created.'}
             json_data = JSONRenderer().render(res)
             return HttpResponse(json_data, content_type='application/json')
-        json_data = JSONRenderer().render(serializer.errors)
+        json_data = JSONRenderer().render(serializer._errors)
         return HttpResponse(json_data, content_type='application/json')
