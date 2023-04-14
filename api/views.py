@@ -12,11 +12,12 @@ from django.core import serializers
 
 @csrf_exempt
 def download_data(request, email):
-    queryset = User.objects.filter(email=email)
-    data = serializers.serialize('xml', queryset)
-    response = HttpResponse(data, content_type='application/xml')
-    response['Content-Disposition'] = 'attachment; filename="data.xml"'
-    return response
+    if request.method == 'Download':
+        queryset = User.objects.filter(email_id = email)
+        data = serializers.serialize('xml', queryset)
+        response = HttpResponse(data, content_type='application/xml')
+        response['Content-Disposition'] = 'attachment; filename="data.xml"'
+        return response
 
 def user_api(request):
     if request.method == 'GET':
