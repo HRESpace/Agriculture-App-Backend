@@ -5,5 +5,5 @@ from api import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('userapi/', views.user_api),
-    path('download_data/',views.download_data)
+    path('downloaddata/<str:email>/',views.download_data)
 ]
